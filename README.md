@@ -1,22 +1,45 @@
 # RedisOPM
 Redis Operations Managerment
 
-### Run a django contianer
-Create a Django docker-compose.yml in /data/RedisOPM/Docker/Django_compose .
-
-1. First, run the below command to create project, it will create the manage.py and mysite directory.
+### Create Project and APP
+1. Create Django Project
+First, run the below command to create project, it will create the manage.py and mysite directory.
 ```
 # docker run -it --rm -v /data/RedisOPM/WebMM:/code -w /code django django-admin.py startproject mysite .
 ```
-> NOTE: If you had not create manage.py , you will get the error:
 
+2. Create Django APP
+Then, create the app directory.
 ```
-# docker-compose up 
-Creating network "djangocompose_NetRedis" with driver "bridge"
-Creating djangocompose_django_1
-Attaching to djangocompose_django_1
-django_1  | python: can't open file 'manage.py': [Errno 2] No such file or directory
-djangocompose_django_1 exited with code 2
+# docker run -it --rm -v /data/RedisOPM/WebMM:/code -w /code django python manage.py startapp RedisWebapp
+```
+
+
+### Run a django contianer
+Create a Django docker-compose.yml in /data/RedisOPM/Docker/Django_compose .
+> * docker-compose.yml 
+```
+version: '2'
+services:
+    django:
+        image: django
+        volumes: 
+             - /data/RedisOPM/WebMM:/code
+        ports:
+             - 8080:8000
+        networks:
+             - NetRedis
+        working_dir: /code
+        command: python manage.py runserver 0.0.0.0:8000
+
+networks:
+    NetRedis:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.0.0.0/24
+                  ip_range: 10.0.0.0/24
+                  gateway: 10.0.0.1
 ```
 
 
