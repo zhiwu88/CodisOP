@@ -8,7 +8,7 @@ Create a Django docker-compose.yml in /data/RedisOPM/Docker/Django_compose .
 ```
 # docker run -it --rm -v /data/RedisOPM/WebMM:/code -w /code django django-admin.py startproject mysite .
 ```
-2. If you had not create manage.py , you will get the error:
+> If you had not create manage.py , you will get the error:
 ```
 # docker-compose up 
 Creating network "djangocompose_NetRedis" with driver "bridge"
