@@ -17,8 +17,8 @@ Then, create the app directory.
 
 ### Run a django contianer
 - Create docker-compose.yml
-Create a Django docker-compose.yml in /data/RedisOPM/Docker/Django_compose .
-> **docker-compose.yml**
+  Create a Django docker-compose.yml in /data/RedisOPM/Docker/Django_compose .
+> *docker-compose.yml*
 ```
 version: '2'
 services:
