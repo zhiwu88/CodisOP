@@ -2,24 +2,24 @@
 Redis Operations Managerment
 
 ### Create Project and APP
-- Create Django Project
+#### Create Django Project
 First, run the below command to create project, it will create the manage.py and mysite directory.
-```
+```Bash
 # docker run -it --rm -v /data/RedisOPM/WebMM:/code -w /code django django-admin.py startproject mysite .
 ```
 
-- Create Django APP
+#### Create Django APP
 Then, create the app directory.
-```
+```Bash
 # docker run -it --rm -v /data/RedisOPM/WebMM:/code -w /code django python manage.py startapp RedisWebapp
 ```
 
 
 ### Run a django contianer
-- Create docker-compose.yml
+#### Create docker-compose.yml
 Create a Django docker-compose.yml in /data/RedisOPM/Docker/Django_compose .
-> `docker-compose.yml`
-```
+> docker-compose.yml
+```Bash
 version: '2'
 services:
     django:
