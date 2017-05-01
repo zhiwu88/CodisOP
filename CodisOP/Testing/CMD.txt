@@ -1,0 +1,13 @@
+echo "client list"|/home/work/redis-cli -h 100.0.0.3  |grep "cmd=set" |wc -l
+echo "client list"|/home/work/redis-cli -h 100.0.0.3  |grep -v "cmd=set" |wc -l
+echo "client list"|/home/work/redis-cli -h 100.0.0.3  |grep -v "cmd=set"
+
+watch -n 1 "echo 'info memory'|./redis-cli -h 100.0.0.3 -p 6379 |grep used_memory_human"
+watch -n 1 "echo 'info'|./redis-cli -h 100.0.0.3 -p 6379 |grep 'instantaneous_ops_per_sec\|used_memory_human'"
+watch -n 1 "echo 'info'|./redis-cli -h 100.0.0.3 -p 6379 |grep 'instantaneous_ops_per_sec\|used_memory_human\|db0'"
+
+Use 200 parallel clients, for a total of 200W requests, 1024 bytes a value, only set, against 100.0.0.3.
+./redis-benchmark -h 100.0.0.3 -t set -d 1024 -n 2000000 -c 200
+./redis-benchmark -h 100.0.0.1 -p 9200 -t set,get -d 1024 -n 2000000 -c 200
+
+

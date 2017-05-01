@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+
+<div class="container">
+{% for codisName, clusterBigkvList in BigKvDetailDict.items %}
+    <div>
+    {% for k,v in ClusterInfoDict.items %}
+        {% ifequal codisName k %}
+        <div>
+            <h4>{{ codisName }} - {{ v.0 }}</h4>
+            <p>统计时间: {{ v.1 }} 
+        （超大key-value数量超过20个时，只提供前20个作为参考。）</p>
+        </div>
+        {% endifequal %}
+    {% endfor %}
+        <table class="table table-striped table-bordered table-condensed">
+            <tr>
+                <td>序号</td>
+                <td>KeyName</td>
+                <td>大小(MB)</td>
+                <td>最新访问时间</td>
+            </tr>
+            {% for key in clusterBigkvList %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ key.0 }}</td>
+                <td>{{ key.1 }}</td>
+                <td>{{ key.2 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <br/>
+    </div>
+{% endfor %}
+
+</div>
+
+{% endblock %}

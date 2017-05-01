@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        {# 必要的CSS #}
+        
+        <LINK REL=stylesheet HREF="{% static "css/bootstrap.css" %}" TYPE="text/css">
+        {# 必要的CSS结束 #}
+        
+        {# jquery优先加载 #}
+    <script src="{% static  "js/jquery.js" %}"></script>
+    <script src="{% static "js/jquery-2.0.3.min.js" %}"></script>
+        {# bootstrap优先加载 #}
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+        {# 其他HEAD内容，子模板请覆盖此处 #}
+        {% block header_content %}{% endblock %}
+    {# 其他HEAD结束 #}
+</head>
+<body>
+
+{% block content %}
+
+<script type="text/javascript" charset="utf-8"></script>
+<script>    
+
+function deleteprefix(prefixID){
+    var a=confirm("确认删除？");
+    if (a==true){
+        $.ajax({
+            type:"GET",
+            url:"/codis/delprefix/"+prefixID+"/",
+            success:function(msg){
+                window.location.href="/codis/prefixlist/";
+            }
+        });
+    }else{
+        return false;
+    };
+}
+
+
+function updatehost(hostID){
+    window.open("/dbcenter/codis/updatehost/"+hostID+"/")
+}
+</script>
+
+
+<div class="container">
+<div role="tabpanel" class="tab-pane" id="messages">
+        <div class="panel panel-default" style="margin:20px;" >
+            <div class="panel-heading" style="width:100%;"><h3 class="panel-title"><B>前缀信息</B></h3></div>
+            <div style="width:100%;">
+                <table  class="table table-striped table-bordered table-condensed">
+                    <tr >
+                          <td>序号</td>
+                          <td>前缀名</td>
+                          <td>业务名</td>
+                          <td>OP负责人</td>
+                          <td>RD负责人</td>
+                          <td>接入时间</td>
+                          <td>Description</td>
+                          <td>操作</td>
+                    </tr>
+                    {% if prefixInfoList %}
+                    {% for prefixinfo in prefixInfoList %}
+                    <tr >
+                    <td>{{prefixinfo.no}}</td>
+                    <td>{{prefixinfo.PrefixName}}</td>
+                    <td>{{prefixinfo.PrefixProject}}</td>
+                    <td>{{prefixinfo.OpOwner}}</td>
+                    <td>{{prefixinfo.RdOwner}}</td>
+                    <td>{{prefixinfo.AccessTime}}</td>
+                    <td>{{prefixinfo.Description}}</td>
+                    <td>
+                   <!--<a href="updatehost/{{ hostinfo.CodisID }}/" target="_blank">修改</a>-->
+                   <button onclick="deleteprefix('{{ prefixinfo.PrefixID }}')" class="btn btn-primary">删除</button></td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <p> NO PREFIX ARE AVAILABLE.</p>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+{% endblock %}

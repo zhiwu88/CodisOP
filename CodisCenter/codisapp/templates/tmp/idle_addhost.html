@@ -1,0 +1,137 @@
+{% load staticfiles %}
+<head>
+   <title>机器添加</title>
+   <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+   <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+   <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<head>
+<style>
+.waitingpic {
+        float:left;
+        display:inline;
+        height:17px;
+        width:17px;
+        background:url("/static/img/animationProcessing.gif") left no-repeat;
+    }
+</style>
+<script type="text/javascript" src="/static/js/tools.js"  charset="utf-8"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+	    var tooltipconf = {
+             'host_ip': {
+                 'placement': 'right',
+                 'title': '请输入host_ip'
+             },
+             'dbs': {
+                 'placement': 'right',
+                 'title': '请输入要MySQL中存在的DB以分号分隔'
+             },
+             'vip': {
+                 'placement': 'right',
+                 'title': '请输入Virtual IP'
+             },
+             'description': {
+                 'placement': 'right',
+                 'title': '请输入备注信息'
+             },
+             'codis_home': {
+                 'placement': 'right',
+                 'title': '必填：请输入codis_home'
+             },
+            }
+            $.each(tooltipconf,function(id,options){
+                $('#'+id).tooltip(options);
+            })
+            var message = $('#mess').val();
+            if(message=='1'){
+	        Tools.set_notification('添加失败,该Hostip已被征用');
+                return false;
+		//setTimeout('window.location.href = "/addhostform/"',3000);
+            };
+	    if(message=='2'){
+		Tools.set_notification('添加成功');
+		setTimeout('window.location.href = "/"',2000);
+            }
+        });
+	function saveCode(){
+            //var name = $('#product_id').val().replace(/^\s+/,'').replace(/\s+$/,'');
+            //var need_memory = $('#need_memory').val().replace(/^\s+/,'').replace(/\s+$/,'');
+            //if(name == "" || !/^[\u4e00-\u9fa5_0-9A-Z-_a-z]*$/.test(name)){
+            //    Tools.set_notification('请输入正确的机器id');
+            //    return false;
+            //}
+            //if(need_memory == "" || !/^[\u4e00-\u9fa5_0-9A-Z-_a-z]*$/.test(need_memory)){
+            //    Tools.set_notification('请输入正确的空间大小值');
+            //    return false;
+            //}
+	    //if (name.length>30 || need_memory.length>30){
+	    //	Tools.set_notification('您输入的编码超过最大长度');
+            //    return false;
+	    //}
+	    $("#newcodeform").submit();
+            Tools.set_notification('<span class="waitingpic"></span>&nbsp;正在添加，请勿关闭窗口',true);
+        };
+        function backnewcode(){
+           window.location.href="/dbcenter/idle/";
+        };
+</script>
+<style>
+    .width40 {
+        width:40% !important
+    }
+
+    .width60 {
+        width:60% !important
+    }
+
+    .width80 {
+        width:80% !important
+    }
+</style>
+{# 建表主体内容 #}
+<div class="container" style="max-width: 1320px;">
+    <form class="form-horizontal" id="newcodeform" action="/dbcenter/idle/addhost2db/" method="post" >
+	<input type = "hidden" id = "mess" value="{%if mess%}{{mess}}{%endif%}">
+	{% csrf_token %}
+        <fieldset>
+          <legend>
+            <span class="glyphicon glyphicon-th"></span>&nbsp;空闲机器添加
+          </legend>
+        </fieldset>
+
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">MASTER_IP</label>
+            <div class="col-lg-9">
+                <input type="text" name="master_ip" id="master_ip" value="" placeholder="master_ip" class="form-control width40"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">MySQL DB</label>
+            <div class="col-lg-9">
+                <input type="text" name="dbs" id="dbs" value="" placeholder="db1;db2;db3" class="form-control width40"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">VIP</label>
+            <div class="col-lg-9">
+                <input type="text" name="vip" id="vip" value="" placeholder="vip" class="form-control width40"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">SLAVE_IP</label>
+            <div class="col-lg-9">
+                <input type="text" name="slave_ip" id="slave_ip" value="" placeholder="slave_ip" class="form-control width40"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">Description</label>
+            <div class="col-lg-9">
+                <textarea  name="description" id="description" value="" placeholder="description" class="form-control width40" rows="3" ></textarea>
+            </div>
+        </div>
+        <div class="form-actions" align="center">
+            <button type="submit" class="btn btn-primary" onclick="saveCode();">保存</button>
+            <button type="button" class="btn btn-primary" onclick="backnewcode();">返回</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        {# 必要的CSS #}
+        
+        <LINK REL=stylesheet HREF="{% static "css/bootstrap.css" %}" TYPE="text/css">
+        {# 必要的CSS结束 #}
+        
+        {# jquery优先加载 #}
+    <script src="{% static  "js/jquery.js" %}"></script>
+    <script src="{% static "js/jquery-2.0.3.min.js" %}"></script>
+        {# bootstrap优先加载 #}
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+        {# 其他HEAD内容，子模板请覆盖此处 #}
+        {% block header_content %}{% endblock %}
+    {# 其他HEAD结束 #}
+</head>
+<body>
+{% block content %}
+<script type="text/javascript" charset="utf-8"></script>
+<script>    
+
+function deletehost(hostID){
+    var a=confirm("确认删除？");
+    if (a==true){
+        $.ajax({
+            type:"GET",
+            url:"/dbcenter/beta/delete/"+hostID+"/",
+            success:function(msg){
+                window.location.href="/dbcenter/beta/";
+            }
+        });
+    }else{
+        return false;
+    };
+}
+
+
+function updatehost(hostID){
+    window.open("/dbcenter/beta/updatehost/"+hostID+"/")
+}
+</script>
+
+<div class="container">
+<div role="tabpanel" class="tab-pane" id="messages">
+        <div class="panel panel-default" style="margin:20px;" >
+            <div class="panel-heading" style="width:100%;"><h3 class="panel-title"><B>MySQL信息</B></h3></div>
+            <div style="width:100%;">
+                <table  class="table table-striped table-bordered table-condensed">
+                    <tr >
+                          <td>MasterIP</td>
+                          <td>DBs</td>
+                          <td>VIP</td>
+                          <td>SlaveIP</td>
+                          <td>Description</td>
+                          <td>操作</td>
+                    </tr>
+                    {% if hostinfolist %}
+                    {% for hostinfo in hostinfolist %}
+                    <tr >
+                    <td>{{hostinfo.MasterIP}}</td>
+                    <td>{{hostinfo.DBs}}</td>
+                    <td>{{hostinfo.VIP}}</td>
+                    <td>{{hostinfo.SlaveIP}}</td>
+                    <td>{{hostinfo.Description}}</td>
+                    <td>
+                   <!--<a href="updatehost/{{ hostinfo.HostID }}/" target="_blank">修改</a>-->
+                   <button onclick="updatehost('{{ hostinfo.HostID }}')">修改</button>
+                   <button onclick="deletehost('{{ hostinfo.HostID }}')">删除</button></td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <p> NO MySQL ARE AVAILABLE.</p>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

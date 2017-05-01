@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+        <meta http-equiv="refresh" content="60" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        {# 必要的CSS #}
+        
+        <LINK REL=stylesheet HREF="{% static "css/bootstrap.css" %}" TYPE="text/css">
+        {# 必要的CSS结束 #}
+        
+        {# jquery优先加载 #}
+    <script src="{% static  "js/jquery.js" %}"></script>
+    <script src="{% static "js/jquery-2.0.3.min.js" %}"></script>
+        {# bootstrap优先加载 #}
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+        {# 其他HEAD内容，子模板请覆盖此处 #}
+        {% block header_content %}{% endblock %}
+    {# 其他HEAD结束 #}
+</head>
+<body>
+
+{% block content %}
+
+<script type="text/javascript" charset="utf-8"></script>
+<script>    
+
+function myrefresh(){ 
+  window.location.reload(); 
+} 
+// setTimeout('myrefresh()', 5000); //指定1秒刷新一次
+
+function deletehost(hostID){
+    var a=confirm("确认删除？");
+    if (a==true){
+        $.ajax({
+            type:"GET",
+            url:"/codis/delcodis/"+hostID+"/",
+            success:function(msg){
+                window.location.href="/codis/codisinfo/";
+            }
+        });
+    }else{
+        return false;
+    };
+}
+
+
+function updatehost(hostID){
+    window.open("/dbcenter/codis/updatehost/"+hostID+"/")
+}
+</script>
+
+
+<div class="container">
+<div role="tabpanel" class="tab-pane" id="messages">
+        <div class="panel panel-default" style="margin:20px;" >
+            <div class="panel-heading" style="width:100%;"><h3 class="panel-title"><B>Codis检查</B>--{{t}}</h3></div>
+            <div style="width:100%;">
+                <table  class="table table-striped table-bordered table-condensed">
+                    <tr >
+                          <td>ProductName</td>
+                          <td>BigKey</td>
+                          <td>message</td>
+                    </tr>
+                    {% if msg %}
+                    {% for k, v in msg.items %}
+                    <tr >
+                    {%for product, ip in productDict.items%}
+                    {%if product == k %}
+                    <td><a href=/codis/dashboard/{{ ip }}/ target="_blank">{{k}}</a></td>
+                    {%for product, ifbigkey in BigKeyDict.items%}
+                      {%if product == k %}
+                        {%if ifbigkey%}
+                        <td><a href=/codis/bigkey/{{ product }}/ target="_blank"><span class="label label-danger">有</span></a></td>
+                        {%else%}
+                        <td><span class="label label-success">无</span></td>
+                        {%endif%}
+                      {%endif%}
+                    {%endfor%}
+                    {%endif%}
+                    {%endfor%}
+                    {% if v == 'good'%}
+                    <td><span class="label label-success">{{v}}</span></td>
+                    {% else %}
+                        {% if k == 'borui' %}
+                            <td><span class="label label-success">borui 不监控</span></td>
+                        {% else %}
+                    <td><span class="label label-danger">{{v}}</span></td>
+                        {% endif %}
+                    {% endif %}
+                   <!--<a href="updatehost/{{ hostinfo.CodisID }}/" target="_blank">修改</a>-->
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <p> NO CODIS ARE AVAILABLE.</p>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+{% endblock %}

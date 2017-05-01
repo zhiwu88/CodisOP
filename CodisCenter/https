@@ -1,0 +1,9 @@
+pid =
+cert = vpsee.pem
+debug = 7
+foreground = yes
+ 
+[https]
+accept = 443
+connect = 8888
+

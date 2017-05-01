@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        {# 必要的CSS #}
+        
+        <LINK REL=stylesheet HREF="{% static "css/bootstrap.css" %}" TYPE="text/css">
+        {# 必要的CSS结束 #}
+        
+        {# jquery优先加载 #}
+    <script src="{% static  "js/jquery.js" %}"></script>
+    <script src="{% static "js/jquery-2.0.3.min.js" %}"></script>
+        {# bootstrap优先加载 #}
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+        {# 其他HEAD内容，子模板请覆盖此处 #}
+        {% block header_content %}{% endblock %}
+    {# 其他HEAD结束 #}
+</head>
+<body>
+
+{% block content %}
+
+<script type="text/javascript" charset="utf-8"></script>
+<script>    
+
+function deletehost(hostID){
+    var a=confirm("确认删除？");
+    if (a==true){
+        $.ajax({
+            type:"GET",
+            url:"/codis/delcodis/"+hostID+"/",
+            success:function(msg){
+                window.location.href="/codis/codisinfo/";
+            }
+        });
+    }else{
+        return false;
+    };
+}
+
+
+function updatehost(hostID){
+    window.open("/codis/updatecodis/"+hostID+"/")
+}
+</script>
+
+
+<div class="container">
+<div role="tabpanel" class="tab-pane" id="messages">
+        <div class="panel panel-default" style="margin:20px;" >
+            <div class="panel-heading" style="width:100%;"><h3 class="panel-title"><B>Codis信息</B></h3></div>
+            <div style="width:100%;">
+                <table  class="table table-striped table-bordered table-condensed">
+                    <tr >
+                          <td>序号</td>
+                          <td>ProductName</td>
+                          <td>Dashboard</td>
+                          <td>业务名</td>
+                          <td>RD负责人</td>
+                          <td>XyVIP</td>
+                          <td>YzVIP</td>
+                          <td>Domain</td>
+                          <td>Description</td>
+                          <td>操作</td>
+                    </tr>
+                    {% if codisInfoList %}
+                    {% for hostinfo in codisInfoList %}
+                    <tr >
+                    <td>{{hostinfo.no}}</td>
+                    <td>{{hostinfo.ProductName}}</td>
+                    <td><a href=/codis/dashboard/{{ hostinfo.Dashboard }}/ target="_blank">{{hostinfo.Dashboard}}</a></td>
+                    <td>{{hostinfo.ProjectName}}</td>
+                    <td>{{hostinfo.RdOwner}}</td>
+                    <td>{{hostinfo.XyVIP}}</td>
+                    <td>{{hostinfo.YzVIP}}</td>
+                    <td>{{hostinfo.Domain}}</td>
+                    <td>{{hostinfo.Description}}</td>
+                    <td>
+                   <button onclick="updatehost('{{ hostinfo.CodisID }}')" class="btn btn-primary">修改</button>
+                   <button onclick="deletehost('{{ hostinfo.CodisID }}')" class="btn btn-primary">删除</button></td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <p> NO CODIS ARE AVAILABLE.</p>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+{% endblock %}

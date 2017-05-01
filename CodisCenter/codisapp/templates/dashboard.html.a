@@ -1,0 +1,122 @@
+{% load staticfiles %}
+<!DOCTYPE html> <html class=no-js ng-app=codisControllers> <head> <meta charset=utf-8> <title>Codis</title> <style type=text/css>.panel-heading {
+          overflow: hidden;
+          padding-top: 20px;
+      }
+      .btn-group {
+          position: relative;
+      }
+
+      td {
+        vertical-align: middle !important;
+      }
+
+      .control-label {
+        padding-top: 0;
+        padding-bottom: 5px;
+      }
+
+      .modal-body {
+        padding-top: 5px !important;
+      }</style> <meta name=description content=""> <meta name=viewport content="width=device-width"> <link rel="shortcut icon" href=/codis/static/6df2b309.favicon.ico> <!-- Place favicon.ico and apple-touch-icon.png in the root directory --> <link rel=stylesheet href=/codis/static/styles/b5495e1f.vendor.css> <link rel=stylesheet href=/codis/static/styles/a1b6bacd.main.css> 
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        {# 必要的CSS #}
+        
+        <LINK REL=stylesheet HREF="{% static "css/bootstrap.css" %}" TYPE="text/css">
+        {# 必要的CSS结束 #}
+        
+        {# jquery优先加载 #}
+    <script src="{% static  "js/jquery.js" %}"></script>
+    <script src="{% static "js/jquery-2.0.3.min.js" %}"></script>
+        {# bootstrap优先加载 #}
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+
+ <body> <!--[if lt IE 10]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]--> <!-- contents --> 
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <!--<div class=navbar-header> 
+      <a class=navbar-brand href=#>Codis</a> 
+    </div> 
+    <div class="navbar-collapse collapse"> 
+      <ul class="nav navbar-nav navbar-right"> 
+      <li><a href=/slots target=_blank>Slots</a></li> 
+      </ul> 
+    </div>
+    -->
+   <div class="navbar-header">
+      <a class="navbar-brand" href="/codis/">CodisCenter</a>
+   </div>
+   <div>
+      <ul class="nav navbar-nav">
+         <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               机器信息
+               <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a href="/codis/used/">已使用</a></li>
+               <li class="divider"></li>
+               <li><a href="/codis/unused/">未使用</a></li>
+               <li class="divider"></li>
+               <li><a href="/codis/unused/addhost/">添加机器</a></li>
+            </ul>
+         </li>
+         <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               Codis
+               <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a href="/codis/codisinfo/">Dashboard</a></li>
+               <li class="divider"></li>
+               <li><a href="/codis/codiscounter">Codis统计</a></li>
+               <li class="divider"></li>
+               <li><a href="/codis/publiccounter">Public统计</a></li>
+               <li class="divider"></li>
+               <li><a href="/codis/public/noprefix">PublicNoPrefix</a></li>
+               <li class="divider"></li>
+               <li><a href="/codis/addcodis">添加Codis</a></li>
+            </ul>
+         </li>
+         <li class="active"><a href="/codis/monitor/">Monitor</a></li>
+         </ul>
+   </div>
+   <div style="float:right">
+      <ul class="nav navbar-nav">
+         <li><a href="/codis/logout/" target="_self">Logout</a></li>
+      </ul>
+   </div>
+ 
+</nav> 
+<div class=container> <!-- Server Groups --> 
+<div ng-controller=codisOverviewCtl ng-cloak> 
+<div class=row> 
+<div class=col-md-4> 
+<h4> Overview [[ product ]] <button ng-click=refresh() class="btn btn-default btn-sm"><span class="glyphicon glyphicon-refresh"></span></button> 
+</h4> 
+<table border="1px" bordercolor="#ADADAD"   width="1200"  height="20"> 
+<!--<table class="table table-bordered"  width="1200"> -->
+  <tbody> 
+    <tr> <td> Product Name:</td>  <td> <b>[[ product ]]</b> <td rowspan="4"  width="400" height="20">
+<div id="container" style="min-width:800px;min-height:100px">
+ <highchart config=chartOps width=200></highchart> </div> </td> 
+    <tr> <td> Keys: </td> <td> [[ keys ]]  
+    <tr> <td> Mem Used: </td> <td> [[ memUsed ]] MB  
+    <tr> <td> Performace:  </td><td> [[ ops ]] OP/s   
+  </table> 
+</div>
+ <!--<div class=col-md-8><highchart config=chartOps></highchart></div>-->
+ </div>
+ </div>
+
+
+
+<script src=/codis/static/scripts/1e5b706e.vendor.js></script>
+ 
+        <input type="text" name="ip", id="ip", value="{{innerIP}}" hidden>
+ <script src=/codis/static/scripts/dea5e6a4.main.js></script>  
+

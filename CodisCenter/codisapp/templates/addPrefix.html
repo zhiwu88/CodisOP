@@ -1,0 +1,151 @@
+{% load staticfiles %}
+<head>
+   <title>新增前缀</title>
+   <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+   <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+   <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<head>
+<style>
+.waitingpic {
+        float:left;
+        display:inline;
+        height:17px;
+        width:17px;
+        background:url("/codis/static/img/animationProcessing.gif") left no-repeat;
+    }
+</style>
+<script type="text/javascript" src="/codis/static/js/tools.js"  charset="utf-8"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+	    var tooltipconf = {
+             'host_ip': {
+                 'placement': 'right',
+                 'title': '请输入host_ip'
+             },
+             'dbs': {
+                 'placement': 'right',
+                 'title': '请输入要MySQL中存在的DB以分号分隔'
+             },
+             'vip': {
+                 'placement': 'right',
+                 'title': '请输入Virtual IP'
+             },
+             'description': {
+                 'placement': 'right',
+                 'title': '请输入备注信息'
+             },
+             'codis_home': {
+                 'placement': 'right',
+                 'title': '必填：请输入codis_home'
+             },
+            }
+            $.each(tooltipconf,function(id,options){
+                $('#'+id).tooltip(options);
+            })
+            var message = $('#mess').val();
+            if(message=='1'){
+	        Tools.set_notification('添加失败,该Hostip已被征用');
+                return false;
+		//setTimeout('window.location.href = "/addhostform/"',3000);
+            };
+	    if(message=='2'){
+		Tools.set_notification('添加成功');
+		setTimeout('window.location.href = "/"',2000);
+            }
+        });
+	function saveCode(){
+            //var name = $('#product_id').val().replace(/^\s+/,'').replace(/\s+$/,'');
+            //var need_memory = $('#need_memory').val().replace(/^\s+/,'').replace(/\s+$/,'');
+            //if(name == "" || !/^[\u4e00-\u9fa5_0-9A-Z-_a-z]*$/.test(name)){
+            //    Tools.set_notification('请输入正确的机器id');
+            //    return false;
+            //}
+            //if(need_memory == "" || !/^[\u4e00-\u9fa5_0-9A-Z-_a-z]*$/.test(need_memory)){
+            //    Tools.set_notification('请输入正确的空间大小值');
+            //    return false;
+            //}
+	    //if (name.length>30 || need_memory.length>30){
+	    //	Tools.set_notification('您输入的编码超过最大长度');
+            //    return false;
+	    //}
+	    $("#newcodeform").submit();
+            Tools.set_notification('<span class="waitingpic"></span>&nbsp;正在添加，请勿关闭窗口',true);
+        };
+        function backnewcode(){
+           window.location.href="/codis/prefixlist/";
+        };
+        function roleChange(){
+            var role = $('select  option:selected').val();
+            if (role == "slave"){
+                $("#masterinfo").css('display','block');
+            }else{
+                $('#masterinfo').css('display','none');
+            };
+        };
+</script>
+<style>
+    .width40 {
+        width:40% !important
+    }
+
+    .width60 {
+        width:60% !important
+    }
+
+    .width80 {
+        width:80% !important
+    }
+</style>
+{# 建表主体内容 #}
+<div class="container" style="max-width: 1320px;">
+    <form class="form-horizontal" id="newcodeform" action="/codis/addprefix2db/" method="post" >
+	<input type = "hidden" id = "mess" value="{%if mess%}{{mess}}{%endif%}">
+	{% csrf_token %}
+        <fieldset>
+          <legend>
+            <span class="glyphicon glyphicon-th"></span>&nbsp;新增前缀
+          </legend>
+        </fieldset>
+
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">前缀名</label>
+            <div class="col-lg-9">
+                <input type="text" name="prefixname" id="prefixname" value="" placeholder="prefixname" class="form-control width40"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">业务名</label>
+            <div class="col-lg-9">
+                <input type="text" name="prefixproject" id="prefixproject" value="" placeholder="prefixproject" class="form-control width40"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">OP负责人</label>
+            <div class="col-lg-9">
+                <input type="text" name="opowner" id="opowner" value="" placeholder="opowner" class="form-control width40"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">RD负责人</label>
+            <div class="col-lg-9">
+                <input type="text" name="rdowner" id="rdowner" value="" placeholder="rdowner" class="form-control width40"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">接入时间</label>
+            <div class="col-lg-9">
+                <input type="text" name="accesstime" id="accesstime" value="" placeholder="accesstime" class="form-control width40"  >
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_name" class="col-lg-2 control-label">Description</label>
+            <div class="col-lg-9">
+                <textarea  name="description" id="description" value="" placeholder="description" class="form-control width40" rows="3" ></textarea>
+            </div>
+        </div>
+        <div class="form-actions" align="center">
+            <button type="submit" class="btn btn-primary" onclick="saveCode();">保存</button>
+            <button type="button" class="btn btn-primary" onclick="backnewcode();">返回</button>
+        </div>
+    </form>
+</div>

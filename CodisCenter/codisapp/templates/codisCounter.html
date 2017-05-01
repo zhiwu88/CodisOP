@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        {# 必要的CSS #}
+        
+        <LINK REL=stylesheet HREF="{% static "css/bootstrap.css" %}" TYPE="text/css">
+        {# 必要的CSS结束 #}
+        
+        {# jquery优先加载 #}
+    <script src="{% static  "js/jquery.js" %}"></script>
+    <script src="{% static "js/jquery-2.0.3.min.js" %}"></script>
+        {# bootstrap优先加载 #}
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+        {# 其他HEAD内容，子模板请覆盖此处 #}
+        {% block header_content %}{% endblock %}
+    {# 其他HEAD结束 #}
+</head>
+<body>
+
+{% block content %}
+
+
+<div class="container">
+<div role="tabpanel" class="tab-pane" id="messages">
+        <div class="panel panel-default" style="margin:20px;" >
+            <div class="panel-heading" style="width:100%;"><h3 class="panel-title"><B>Codis统计信息</B></h3></div>
+            <div style="width:100%;">
+                <table  class="table table-striped table-bordered table-condensed">
+                    <tr >
+                          <td>序号</td>
+                          <td>Codis</td>
+                          <td>业务名</td>
+                          <td>机器数</td>
+                          <td>Codis总容量<br>(单位G)</td>
+                          <td>Codis上周使用容量<br>(单位G)</td>
+                          <td>Codis已用容量<br>(单位G)</td>
+                          <td>一周数据增长率</td>
+                          <td>剩余容量</td>
+                          <td>容量使用率</td>
+                          <td>key的个数</td>
+                          <td>qps</td>
+                          <td>慢查询</td>
+                          <td>业务负责人</td>
+                    </tr>
+                    {% if productList %}
+                      {% for product in productList %}
+                      <tr>
+                        <td>{{ forloop.counter }}</td>
+                        {% for k, cc in counter.items %}
+                          {% if k == product %}
+                            {% for p, ip in productDict.items %}
+                            {% if p == product %}
+                            <td><a href=/codis/dashboard/{{ ip }}/ target="_blank">{{product}}</a></td>
+                            {% endif %}
+                            {% endfor %}
+                            {% for c in cc %}
+                            <td>{{c}}</td>
+                            {% endfor %}
+                          {% endif %}
+                        {% endfor %}
+                      </tr>
+                      {% endfor %}
+                    {% else %}
+                      <p> NO CODIS ARE AVAILABLE.</p>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+{% endblock %}

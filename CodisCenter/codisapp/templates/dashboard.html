@@ -1,0 +1,569 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html class=no-js ng-app=codisControllers xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset=utf-8>
+    <title>Codis</title>
+    <style type=text/css>.panel-heading {
+        overflow: hidden;
+        padding-top: 20px;
+    }
+
+    .btn-group {
+        position: relative;
+    }
+
+    td {
+        vertical-align: middle !important;
+    }
+
+    .control-label {
+        padding-top: 0;
+        padding-bottom: 5px;
+    }
+
+    .modal-body {
+        padding-top: 5px !important;
+    }</style>
+    <meta name=description content="">
+    <meta name=viewport content="width=device-width">
+    <link rel="shortcut icon" href=/codis/static/6df2b309.favicon.ico>
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel=stylesheet href=/codis/static/styles/b5495e1f.vendor.css>
+    <link rel=stylesheet href=/codis/static/styles/a1b6bacd.main.css>
+<body> <!--[if lt IE 10]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<script>
+    function startha(innerIP) {
+        $.ajax({
+            type: "GET",
+            url: "/api/haturnon/" + innerIP + "/",
+            success: function (message) {
+                var result = eval("(" + message + ")");
+//                alert(result.msg);
+            }
+        });
+    }
+
+    function stopha(innerIP) {
+        $.ajax({
+            type: "GET",
+            url: "/api/haturnoff/" + innerIP + "/",
+            success: function (message) {
+                var result = eval("(" + message + ")");
+//                alert(result.msg);
+            }
+        });
+
+    }
+</script>
+
+<script type=text/ng-template id=addServerToGroupModal>
+    <div
+            class="modal-header">
+        <h4 class="modal-title">Add Server To Group</h4>
+    </div>
+    <div class="modal-body">
+        <form novalidate="novalidate" class="form-horizontal">
+            <input type="hidden" ng-model="server.group_id" ng-value="server.group_id"/>
+            <div class="control-group">
+                <label class="control-label">Server Addr:</label>
+                <div class="controls">
+                    <input class="form-control" type="text" ng-model="server.addr"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="ok(server)">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div></script>
+<script type=text/ng-template id=slotRangeSetModal>
+    <div
+            class="modal-header">
+        <h4 class="modal-title">Set Server Group to Slot(s)</h4>
+    </div>
+    <div class="modal-body">
+        <form novalidate="novalidate" class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label">Slot From</label>
+                <div class="controls">
+                    <input class="form-control" type="number" ng-model="task.from"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Slot To</label>
+                <div class="controls">
+                    <input class="form-control" type="number" ng-model="task.to"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">New Group Id</label>
+                <div class="controls">
+                    <input class="form-control" type="number" ng-model="task.new_group"/>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="ok(task)">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div></script>
+<script type=text/ng-template id=migrateModal>
+    <div
+            class="modal-header">
+        <h4 class="modal-title">Migrate Slot(s)</h4>
+    </div>
+    <div class="modal-body">
+        <form novalidate="novalidate" class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label">Slot From</label>
+                <div class="controls">
+                    <input class="form-control" type="number" ng-model="task.from"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Slot To</label>
+                <div class="controls">
+                    <input class="form-control" type="number" ng-model="task.to"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Migrate to (Group Id)</label>
+                <div class="controls">
+                    <input class="form-control" type="number" ng-model="task.new_group"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Migrate Key Delay (MS)</label>
+                <div class="controls">
+                    <input class="form-control" type="number" ng-model="task.delay"/>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="ok(task)">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div></script>
+<script type=text/ng-template id=newServerGroupModal>
+    <div
+            class="modal-header">
+        <h4 class="modal-title">New Server Group</h4>
+    </div>
+    <div class="modal-body">
+        <form novalidate="novalidate" class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label">Server Group Id (1,2,3,4,5...):</label>
+                <div class="controls">
+                    <input class="form-control" type="number" ng-model="group.id"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="ok(group)">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div></script> <!-- contents -->
+<div class="navbar navbar-default navbar-static-top" role=navigation>
+    <div class=container>
+        <div class=navbar-header><a class=navbar-brand target=_blank href="/help/{{innerIP}}/">Help</a></div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href=/slots/{{innerIP}} target=_blank>Slots</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class=container> <!-- Server Groups -->
+    <div ng-controller=codisOverviewCtl ng-cloak>
+        <div class=row>
+            <highchart config=chartOps></highchart>
+        </div>
+        <div class=row>
+            <h4> Overview
+                <button ng-click=refresh() class="btn btn-default btn-sm"><span
+                        class="glyphicon glyphicon-refresh"></span></button>
+            </h4>
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <td> Product Name / Dashboard Role:
+                    <td><b>[[ product ]]</b> / <b>[[ role ]]</b>
+                <tr>
+                    <td> IDC:
+                    <td>
+                        <pre id="default-spacing">[[ idc | json ]]</pre>
+                <tr>
+                    <td> Dashboard Addr <span class="label label-info"> [[ dashboardSize ]] </span>:
+                    <td>
+                        <pre id="default-spacing">[[ dashboard | json ]]</pre>
+                <tr>
+                    <td> Redis Keys:
+                    <td> [[ keys ]]
+                <tr>
+                    <td> Redis Memory Used/Rss/Max:
+                    <td> [[ memUsed ]]MB / [[ rss ]]MB / [[ maxmemory ]]
+                <tr>
+                    <td> Slot Number:
+                    <td><b>[[ slotnum ]]</b>
+                <tr>
+                    <td> bigreqsize:
+                    <td><b>[[ bigreqsize ]]</b>
+                <tr>
+                    <td> recordtype:
+                    <td><b>[[ recordtype ]]</b>
+                <tr>
+                    <td> enablesafepromotion:
+                    <td><b>[[ enablesafepromotion ]]</b>
+                <tr>
+                    <td> safepromotionmaxblockingms:
+                    <td><b>[[ safepromotionmaxblockingms ]]</b>
+                <tr>
+                    <td> prefixwhitelist:
+                    <td><b>[[ prefixwhitelist ]]</b>
+                <tr>
+                    <td> ipwhitelist:
+                    <td><b>[[ ipwhitelist ]]</b>
+                <tr>
+                    <td> activitymigr:
+                    <td><b>[[ activitymigr ]]</b>
+                <tr>
+                    <td> Proxies Performance:
+                    <td> [[ opsps ]] OP/s
+                <tr>
+                    <td> Proxy Backend Ping Period:
+                    <td> [[ backend_ping_period ]] seconds
+                <tr>
+                    <td> Proxy Session Max Timeout:
+                    <td> [[ session_max_timeout ]] seconds
+                <tr>
+                    <td> Proxy Session Max Buffer Size:
+                    <td> [[ session_max_bufsize ]]
+                <tr>
+                    <td> Proxy Session Max Pipeline:
+                    <td> [[ session_max_pipeline ]]
+                <tr>
+                    <td> Zk Action Count:
+                    <td> [[ action_count ]]
+                <tr>
+                    <td> Zookeeper Cluster:<br><a target="_blank" href="/api/zkslowlog/{{innerIP}}/">slowlog</a>
+                    <td>
+                        <pre id="default-spacing">[[ zk | json ]]</pre>
+                <tr>
+                    <td> Zookeeper Session Timeout:
+                    <td> [[ zk_session_timeout ]] milliseconds
+            </table>
+        </div>
+    </div>
+    <div ng-controller=codisServerGroupMainCtl ng-cloak>
+        <div class=row>
+            <div class=col-md-120>
+                <h4> Server Groups
+                    <button ng-click=refresh() class="btn btn-default btn-sm"><span
+                            class="glyphicon glyphicon-refresh"></span></button>
+                </h4>
+                <p>
+                    <button class="btn btn-sm btn-default" ng-click=addServerGroup()><span
+                            class="glyphicon glyphicon-plus"></span> New Server Group
+                    </button>
+                </p>
+            </div>
+        </div>
+        <div class=row>
+            <div class=col-md-120>
+                <!--repeat groups-->
+                <div ng-repeat="group in server_groups | orderBy:'id'">
+                    <div class=panel-heading><b> group ID = [[ group.id ]] </b>
+                        <button ng-click=refresh() class="btn btn-default btn-sm"><span
+                                class="glyphicon glyphicon-refresh"></span></button>
+                        <div class="btn-group btn-group-sm pull-right">
+                            <!--<button class="btn btn-sm btn-primary" ng-click=addServer(group.id)-->
+                            <!--title="Add Redis Server">-->
+                            <!--<span class="glyphicon glyphicon-plus"></span> Add New Redis Instance-->
+                            <!--</button>-->
+                            <button class="btn btn-sm btn-default btn-warning" ng-click=removeServerGroup(group.id)
+                                    data-toggle="tooltip" title="Remove Server Group">
+                                <span class="glyphicon glyphicon-remove"></span></button>
+                        </div>
+                    </div>
+                    <div>
+                        <table class="table table-bordered" ng-if="group.servers.length > 0">
+                            <thead>
+                            <tr>
+                                <th> IDC
+                                <th> Addr
+                                <th> Codis/Redis
+                                <th> Mem Used
+                                <th> Keys & Replication
+                                <th> Offset
+                                <th> OP/s
+                                <th> Ikbps
+                                <th> Okbps
+                                <th>
+                            <tbody>
+                            <!--repeat servers-->
+                            <tr ng-repeat="server in group.servers | orderBy:'idc' | orderBy:'type'"
+                                ng-controller=redisCtl>
+                                <!--redisCtl generate serverInfo accordingly server in group.servers-->
+                                <td> [[ server.idc ]]</td>
+                                <td>
+                                    <a href="/api/redis/[[ server.addr ]]/stat/{{innerIP}}/" target=_blank><b>[[ server.addr
+                                        ]]</b></a><br>
+                                    <a href="/api/redis/[[ server.addr ]]/slowlog/300/{{innerIP}}/" target=_blank><b>slowlog</b></a>
+                                    <a href="/api/redis/[[ server.addr ]]/config/{{innerIP}}/" target=_blank><b>config</b></a>
+                                </td>
+                                <td ng-switch="server.type">
+                                    <span ng-if="server.type !== serverInfo.role">
+                                        <span class="label label-danger"> [[ server.type ]]/[[ serverInfo.role ]] </span>
+                                    </span>
+                                    <span ng-if="server.type === serverInfo.role">
+                                        <span class="label label-success"> [[ server.type ]]/[[ serverInfo.role ]] </span>
+                                    </span>
+                                    <span ng-switch-when="slave">
+                                        <br><b>[[serverInfo.master_host]] : [[serverInfo.master_port]]</b>
+                                    </span>
+                                    <span ng-switch-when="master">
+                                        <div ng-if="serverInfo.connected_slaves != (group.servers.length - 1)">
+                                            <span class="label label-danger"> missing [[ group.servers.length - 1 - serverInfo.connected_slaves ]] slave(s) </span>
+                                        </div>
+                                    </span>
+                                </td>
+                                <td> [[ serverInfo.used_memory_human ]]/[[ serverInfo.maxmemory ]]
+                                <td>
+                                    db0 : [[ serverInfo.db0 ]]
+                                    <div ng-repeat="(key, value) in slaves">
+                                        [[ value ]]
+                                    </div>
+                                </td>
+                                <td ng-switch="serverInfo.role">
+                                    <span ng-switch-when="master">
+                                     [[ serverInfo.master_repl_offset ]]
+                                    </span>
+                                    <span ng-switch-default>
+                                     [[ serverInfo.slave_repl_offset ]]
+                                    </span>
+                                </td>
+                                <td> [[ serverInfo.instantaneous_ops_per_sec ]]
+                                <td> [[ serverInfo.instantaneous_input_kbps ]]
+                                <td> [[ serverInfo.instantaneous_output_kbps ]]
+                                <td>
+                                    <div class="btn-group btn-group-sm pull-right">
+                                        <a class="btn btn-primary btn-sm" ng-if="server.type != 'master'" href=""
+                                           data-toggle="tooltip" title="Promote Server" ng-click=promoteServer(server)>
+                                            <span class="glyphicon glyphicon-arrow-up"></span>
+                                        </a>
+                                        <a class="btn btn-warning btn-sm" href="" ng-click=removeServer(server)
+                                           data-toggle="tooltip" title="Remove Server"><span
+                                                class="glyphicon glyphicon-remove"></span></a>
+                                    </div>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-controller=codisSlotCtl ng-cloak>
+        <div class=row>
+            <div class=col-md-120><h4> Slot Control </h4>
+                <p>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-sm btn-warning" ng-click=rangeSet()><span
+                            class="glyphicon glyphicon-pencil"></span> Range Set (set new Group)
+                    </button>
+                    <a class="btn btn-sm btn-default" target=_blank href=/slots/{{innerIP}}/><span
+                            class="glyphicon glyphicon-eye-open"></span>
+                        Slots Status </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-controller=codisMigrateCtl ng-cloak>
+        <div class=row>
+            <div class=col-md-120>
+                <h4> Migrate Status
+                    <button ng-click=refresh() class="btn btn-default btn-sm"><span
+                            class="glyphicon glyphicon-refresh"></span></button>
+                </h4>
+                <p>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-sm btn-info" ng-click=rebalance()><span
+                            class="glyphicon glyphicon-th-large"></span> Auto Rebalance
+                    </button>
+                    <button class="btn btn-default btn-sm" ng-click=migrate()><span
+                            class="glyphicon glyphicon-plane"></span> Migrate Slot(s)
+                    </button>
+                </div>
+                </p>
+                <table class="table table-bordered" ng-if="migrate_tasks.length>0"><h5 class=text-muted> Migrate Task
+                    Info </h5>
+                    <thead>
+                    <tr>
+                        <th>Migrate Slot
+                        <th>New Group
+                        <th>Create At
+                        <th>Status
+                        <th>Percent
+                    <tbody>
+                    <tr ng-repeat="task in migrate_tasks">
+                        <td> slot_[[ task.slot_id ]]
+                        <td> group_[[ task.new_group ]]
+                        <td> [[ task.create_at * 1000| date:'yyyy-MM-dd HH:mm:ss Z']]
+                        <td> [[ task.status]]
+                        <td> [[ task.percent ]] %
+                </table>
+                <table ng-if="migrate_status.migrate_slots.length > 0" class="table table-bordered"><h5
+                        ng-if="migrate_status.migrate_slots.length > 0" class=text-muted> Migrating Slot Info </h5>
+                    <thead>
+                    <tr>
+                        <th>Slot Id
+                        <th>Current Owner Group
+                        <th>Migrate From
+                        <th>Migrate To
+                        <th>Remain Keys
+                    <tbody>
+                    <tr ng-repeat="slot in migrate_status.migrate_slots" ng-controller=slotInfoCtl>
+                        <td> slot_[[ slot.id ]]
+                        <td> group_[[ slot.group_id ]]
+                        <td> [[slot.state.migrate_status.from ]]
+                        <td> [[slot.state.migrate_status.to ]]
+                        <td> [[ slotInfo.keys ]]
+                </table>
+            </div>
+        </div>
+    </div>
+    <div ng-controller=codisProxyCtl ng-cloak>
+        <div class=row>
+            <div class=col-md-120>
+                <h4> Proxy Status
+                    <button ng-click=refresh() class="btn btn-default btn-sm"><span
+                            class="glyphicon glyphicon-refresh"></span></button>
+                </h4>
+                <table ng-if="proxies.length > 0" class="table table-bordered">
+                    <tbody>
+                    <thead>
+                    <tr>
+                        <th>IDC
+                        <th>ID
+                        <th>Addr
+                        <th>OP/s
+                        <th>Sessions
+                        <th>Slots
+                        <th>ZK Status
+                        <th>Status
+                        <th>
+                    <tr ng-repeat="proxy in proxies | orderBy:'idc'">
+                        <td> [[ proxy.idc ]]
+                        <td><a href="/api/proxy/[[proxy.id]]/debug/vars/{{innerIP}}/" target=_blank><b>[[proxy.id]]</b></a>
+                        <td> [[ proxy.addr ]]
+                        <td> [[ proxy.opsps ]]
+                        <td> [[ proxy.sessions ]]
+                        <td ng-switch=proxy.slot_consistency>
+                            <span class="label label-success" ng-switch-when=consistent>
+                                <a target="_blank" href="/api/slotstatistic/{{innerIP}}/">[[proxy.slot_consistency]]</a></span>
+                            <span class="label label-warning" ng-switch-default>
+                                <a target="_blank" href="/api/slotstatistic/{{innerIP}}/">[[proxy.slot_consistency]]</a></span>
+                        <td ng-switch=proxy.zkstatus><span class="label label-success" ng-switch-when=StateHasSession> [[proxy.zkstatus]] </span>
+                            <span class="label label-danger" ng-switch-default> [[proxy.zkstatus]] </span>
+                        <td ng-switch=proxy.state><span class="label label-success" ng-switch-when=online> [[proxy.state]] </span>
+                            <span class="label label-default" ng-switch-default> [[proxy.state]] </span>
+                        <td>
+                            <button class="btn btn-info" ng-click="setStatus(proxy, 'online')">Mark Online</button>
+                            <button class="btn btn-warning" ng-click="setStatus(proxy, 'mark_offline')">Mark Offline
+                            </button>
+                </table>
+                <h5 ng-if="proxies.length ==0" class=text-muted>No proxies</h5></div>
+        </div>
+    </div>
+    <div ng-controller=codisHaCtl ng-cloak>
+        <div class=row>
+            <h4> HA Status
+                <button ng-click=refresh() class="btn btn-default btn-sm"><span
+                        class="glyphicon glyphicon-refresh"></span></button>
+            </h4>
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <td><b>[[ product ]]</b> Full Resynchronization:</td>
+                    <td><span ng-if="localCurrParallelRepl > localMaxParallelRepl">
+                              <span class="label label-danger"> [[ localCurrParallelRepl ]] / [[ localMaxParallelRepl ]] </span>
+                        </span>
+                        <span ng-if="localCurrParallelRepl <= localMaxParallelRepl">
+                              <span class="label label-success"> [[ localCurrParallelRepl ]] / [[ localMaxParallelRepl ]] </span>
+                        </span>
+                        <br>
+                        <pre id="default-spacing">[[ lRepl | json ]]</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td> All Products Full Resynchronization:</td>
+                    <td><span ng-if="globalCurrParallelRepl > globalMaxParallelRepl">
+                              <span class="label label-danger"> [[ globalCurrParallelRepl ]] / [[ globalMaxParallelRepl ]] </span>
+                        </span>
+                        <span ng-if="globalCurrParallelRepl <= globalMaxParallelRepl">
+                              <span class="label label-success"> [[ globalCurrParallelRepl ]] / [[ globalMaxParallelRepl ]] </span>
+                        </span>
+                        <br>
+                        <pre id="default-spacing">[[ gRepl | json ]]</pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td> High Availability
+                        <span ng-if="haStatus == 'On'">
+                              <span class="label label-success"> On </span>
+                        </span>
+                        <span ng-if="haStatus != 'On'">
+                              <span class="label label-danger"> Off </span>
+                        </span>
+                    </td>
+                    <td>
+                        <button onclick="startha('{{innerIP}}')" class="btn btn-info">On</button>
+                        <button onclick="stopha('{{innerIP}}')" class="btn btn-warning">Off</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src=/codis/static/scripts/1e5b706e.vendor.js></script>
+<input type="text" name="ip", id="ip", value="{{innerIP}}" hidden>
+<script src=/codis/static/scripts/new.main.js></script>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>

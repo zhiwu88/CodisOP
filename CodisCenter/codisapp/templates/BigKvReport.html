@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+
+<div class="container">
+
+<h3>Codis集群超大Key-Value统计信息</h3>
+<table class="table table-striped table-bordered table-condensed">
+    <tr>
+        <th>序号</th>
+        <th>Codis</th>
+        <th>业务名</th>
+        <th>总数量</th>
+        <th>最大值(MB)</th>
+        <th>RD负责人</th>
+    </tr>
+
+<!--
+    {% for c in CodisInfoList %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ c.ProductName }}</td>
+        <td>{{ c.ProjectName }}</td>
+        {% for k,v in BigKeyCountDict.items %}
+            {% ifequal c.ProductName k %}
+            <td>{{ v }}</td>
+            {% endifequal %}
+        {% endfor %}
+        {% for k,v in BigKeyMaxDict.items %}
+            {% ifequal c.ProductName k %}
+            <td>{{ v }}</td>
+            {% endifequal %}
+        {% endfor %}
+        <td>{{ c.RdOwner }}</td>
+
+    </tr>
+    {% endfor %}
+-->
+
+    {% for k,v in BigKeyTableDict.items %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ k }}</td>
+        <td>{{ v.1 }}</td>
+        <td>{{ v.3 }}</td>
+        <td>{{ v.4 }}</td>
+        <td>{{ v.2 }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+
+{% endblock %}

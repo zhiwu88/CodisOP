@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        {# 必要的CSS #}
+        
+        <LINK REL=stylesheet HREF="{% static "css/bootstrap.css" %}" TYPE="text/css">
+        {# 必要的CSS结束 #}
+        
+        {# jquery优先加载 #}
+    <script src="{% static  "js/jquery.js" %}"></script>
+    <script src="{% static "js/jquery-2.0.3.min.js" %}"></script>
+        {# bootstrap优先加载 #}
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+        {# 其他HEAD内容，子模板请覆盖此处 #}
+        {% block header_content %}{% endblock %}
+    {# 其他HEAD结束 #}
+</head>
+<body>
+
+{% block content %}
+
+<script type="text/javascript" charset="utf-8"></script>
+<script>    
+
+function deletehost(hostID){
+    var a=confirm("确认删除？");
+    if (a==true){
+        $.ajax({
+            type:"GET",
+            url:"/dbcenter/online/delete/"+hostID+"/",
+            success:function(msg){
+                window.location.href="/dbcenter/online/";
+            }
+        });
+    }else{
+        return false;
+    };
+}
+
+
+function updatehost(hostID){
+    window.open("/dbcenter/online/updatehost/"+hostID+"/")
+}
+</script>
+
+
+<div class="container">
+<form class="form-inline" role="form" action="/codis/used/" method="post" >
+   <div class="form-group">
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="text" class="form-control" id="text" name="text" 
+         placeholder="请输入">
+   </div>
+   <button type="submit" class="btn btn-default">搜索</button>
+</form>
+
+
+<div role="tabpanel" class="tab-pane" id="messages">
+        <div class="panel panel-default" style="margin:20px;" >
+            <div class="panel-heading" style="width:100%;"><h3 class="panel-title"><B>Host信息</B></h3></div>
+            <div style="width:100%;">
+                <table  class="table table-striped table-bordered table-condensed">
+                    <tr >
+                          <td>序号</td> 
+                          <td>IP</td>
+                          <td>主机名</td>
+                          <td>内存</td>
+                          <td>机房</td>
+                          <td>Description</td>
+                    </tr>
+                    {% if hostinfolist %}
+                    {% for hostinfo in hostinfolist %}
+                    <tr >
+                    <td>{{hostinfo.no}}</td>
+                    <td><a href=/codis/dashboard/{{ hostinfo.HostIP }}:8080/ target="_blank">{{hostinfo.HostIP}}</a></td>
+                    <td>{{hostinfo.HostName}}</td>
+                    <td>{{hostinfo.HostMem}}G</td>
+                    <td>{{hostinfo.Room}}</td>
+                    <td>{{hostinfo.Description}}</td>
+                   <!--<a href="updatehost/{{ hostinfo.HostID }}/" target="_blank">修改</a>-->
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <p> No host.</p>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+{% endblock %}
